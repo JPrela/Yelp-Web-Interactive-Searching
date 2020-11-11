@@ -114,6 +114,12 @@ def index():
     names.append(result['name'])  # can also be accessed using result[0]
   cursor.close()
 
+  cursor_c = g.conn.execute("SELECT user_id FROM Customers WHERE Customers.cname = 'Gabi'")
+  list_c = []
+  for i in cursor_c:
+      list_c.append(i)
+  cursor_c.close()
+
   #
   # Flask uses Jinja templates, which is an extension to HTML where you can
   # pass data to a template and dynamically generate HTML based on the data
@@ -140,7 +146,8 @@ def index():
   #     <div>{{n}}</div>
   #     {% endfor %}
   #
-  context = dict(data = names)
+  # context = dict(data = names)
+  context = dict(data = list_c)
 
 
   #
@@ -168,7 +175,6 @@ def add():
   name = request.form['name']
   g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)
   return redirect('/')
-
 
 @app.route('/login')
 def login():
