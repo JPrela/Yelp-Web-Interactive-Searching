@@ -41,11 +41,11 @@ engine = create_engine(DATABASEURI)
 # Example of running queries in your database
 # Note that this will probably not work if you already have a table named 'test' in your database, containing meaningful data. This is only an example showing you how to run queries in your database using SQLAlchemy.
 #
-engine.execute("""CREATE TABLE IF NOT EXISTS test (
-  id serial,
-  name text
-);""")
-engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
+
+
+
+
+
 
 
 @app.before_request
@@ -75,9 +75,40 @@ def teardown_request(exception):
   except Exception as e:
     pass
 
+@app.route('/clogin',methods=['GET','POST'])
+def clogin():
+  if request.method == 'GET':
+    return render_template('clogin.html')
+  user_id=request.form.get('user id')
+  cursor = g.conn.execute("SELECT user_id FROM customers")
+  indicate=0
+  for i in cursor:
+    if i['user_id']==user_id:
+      indicate=1
+      break
+  if indicate==1:
+    return render_template('clogin.html',**{'msg': 'login success!'})
+  else:
+    return render_template('clogin.html',**{'msg': 'user id doesn\'t exist!'})
+
+@app.route('/blogin',methods=['GET','POST'])
+def blogin():
+  if request.method == 'GET':
+    return render_template('blogin.html')
+  business_id=request.form.get('business id')
+  cursor = g.conn.execute("SELECT business_id FROM business")
+  indicate=0
+  for i in cursor:
+    if i['business_id']==business_id:
+      indicate=1
+      break
+  if indicate==1:
+    return render_template('blogin.html',**{'msg': 'login success!'})
+  else:
+    return render_template('blogin.html',**{'msg': 'user id doesn\'t exist!'})
 
 #
-# @app.route is a decorator around index() that means:
+# @app.route is a around index() that means:
 #   run index() whenever the user tries to access the "/" path using a GET request
 #
 # If you wanted the user to go to, for example, localhost:8111/foobar/ with POST or GET then you could use:
