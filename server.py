@@ -70,6 +70,13 @@ def teardown_request(exception):
   except Exception as e:
     pass
 
+@app.route('/')
+def index():
+  # DEBUG: this is debugging code to see what request looks like
+  print(request.args)
+  return render_template("index.html")
+
+
 @app.route('/clogin',methods=['GET','POST'])
 def clogin():
   if request.method == 'GET':
@@ -83,7 +90,7 @@ def clogin():
       break
   cursor.close()
   if indicate==1:
-    return redirect(url_for('orders', user_id=user_id, business_id=0))
+    return redirect(url_for('user_info', user_id=user_id))
   else:
     return render_template('clogin.html', **{'msg': 'user id doesn\'t exist!'})
 
@@ -124,9 +131,17 @@ def blogin():
       break
   cursor.close()
   if indicate==1:
-    return redirect(url_for('orders', user_id=0, business_id=business_id))
+    return redirect(url_for('busi_info', business_id=business_id))
   else:
     return render_template('blogin.html',**{'msg': 'business id doesn\'t exist!'})
+
+@app.route('/user_info/<user_id>/')
+def user_info(user_id):
+  return render_template('user_info.html', **{'user_id_': user_id, 'busi_id': 0})
+
+@app.route('/busi_info/<business_id>/')
+def busi_info(business_id):
+  return render_template('busi_info.html', **{'user_id_':0, 'busi_id': business_id})
 
 @app.route('/orders_review/<order_id>/')
 def orders_review(order_id):
@@ -145,12 +160,6 @@ def orders_review(order_id):
   return render_template('orders_review.html',**context)
 
 
-
-@app.route('/')
-def index():
-  # DEBUG: this is debugging code to see what request looks like
-  print(request.args)
-  return render_template("index.html")
 
 
 
