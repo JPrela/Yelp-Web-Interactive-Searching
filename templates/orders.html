@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  <h1>Orders</h1>
+    <div>
+    {% for n in data %}
+        <p>order id: <a href="{{ url_for('orders_review',order_id=n[0]) }}"> {{n[0]}} </a></p>
+        <p>date: {{n[1]}}</p>
+        <p>customer id: {{n[2]}}</p>
+        <p>customer name: {{n[2]}}</p>
+        <p>business name: {{n[2]}}</p>
+        <p>-------------------------------------------------------------------------------------</p>
+    {% endfor %}
+  </div>
+</body>
+</html>
