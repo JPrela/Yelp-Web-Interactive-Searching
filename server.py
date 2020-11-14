@@ -153,7 +153,8 @@ def orders(user_id, business_id):
     order.append(i['user_id'])
     order.append(i['cname'])
     order.append(i['bname'])
-    orders.append(order)
+    orders.append(order[:])
+    order.clear()
   cursor.close()
   context=dict(data=orders)
 
@@ -170,14 +171,15 @@ def tips(user_id, business_id):
     s = text("SELECT user_id, business_id, tdate, ttext FROM tips WHERE user_id LIKE :x")
     value = {'x': user_id}
     cursor = g.conn.execute(s, value)
-  tip=[]
-  tips=[]
+  tips = []
+  tip = []
   for i in cursor:
     tip.append(i['user_id'])
     tip.append(i['business_id'])
     tip.append(i['tdate'])
     tip.append(i['ttext'])
-    tips.append([tip])
+    tips.append(tip[:])
+    tip.clear()
   cursor.close()
   context=dict(data=tips)
 
@@ -186,7 +188,7 @@ def tips(user_id, business_id):
 
 @app.route('/covid_19/<business_id>/')
 def covid_19(business_id):
-  s = text("SELECT business_id, bname, grubhub, delevery_or_takeout, temporary_close FROM business WHERE business_id LIKE :x")
+  s = text("SELECT business_id, bname, grubhub, delivery_or_takeout, temporary_close FROM business WHERE business_id LIKE :x")
   value = {'x': business_id}
   cursor = g.conn.execute(s, value)
   covid = []
@@ -195,7 +197,7 @@ def covid_19(business_id):
     covid.append(i['bname'])
     covid.append(i['bname'])
     covid.append(i['grubhub'])
-    covid.append(i['delevery_or_takeout'])
+    covid.append(i['delivery_or_takeout'])
     covid.append(i['temporary_close'])
   cursor.close()
   context = dict(data=covid)
@@ -218,6 +220,8 @@ def user_info(user_id):
     user.append(results["cool"])
   cursor.close()
   context = dict(data=user)
+  id_info={'user_id_':user_id,'busi_id':0}
+  context.update(id_info)
   return render_template('user_info.html', **context)
 
 @app.route('/busi_info/<business_id>/')
@@ -239,6 +243,8 @@ def busi_info(business_id):
     busi.append(i["postal_code"])
   cursor.close()
   context = dict(data = busi)
+  id_info = {'user_id_': 0, 'busi_id': business_id}
+  context.update(id_info)
   return render_template('busi_info.html', **context)
 
 

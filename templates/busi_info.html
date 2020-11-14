@@ -6,9 +6,9 @@
 </head>
 <body>
   <h1>Business</h1>
-  <p><a href="{{ url_for('covid_19', business_id = busi_id) }}"> Covid 19 Information </a></p>
-  <p><a href="{{ url_for('orders',user_id = user_id_, business_id = busi_id) }}"> All orders </a></p>
-  <p><a href="{{ url_for('tips',user_id = user_id_, business_id = busi_id) }}"> All tips </a></p>
+  <p><a href="{{url_for('covid_19', business_id=busi_id) }}"> Covid-19 Information </a></p>
+  <p><a href="{{url_for('orders', user_id=user_id_,business_id=busi_id) }}"> All Orders </a></p>
+  <p><a href="{{url_for('tips', user_id=user_id_,business_id=busi_id) }}"> All tips </a></p>
   <p> Bisuness ID: {{data[0]}} </p>
   <p> Your business name: {{data[1]}} </p>
   <p> Business category: {{data[2]}} </p>
