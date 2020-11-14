@@ -14,6 +14,7 @@ from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response, url_for
 
+
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
 
@@ -94,6 +95,24 @@ def clogin():
   else:
     return render_template('clogin.html', **{'msg': 'user id doesn\'t exist!'})
 
+@app.route('/blogin',methods=['GET','POST'])
+def blogin():
+  if request.method == 'GET':
+    return render_template('blogin.html')
+  business_id=request.form.get('business id')
+  cursor = g.conn.execute("SELECT business_id FROM business")
+  indicate=0
+  for i in cursor:
+    if i['business_id']==business_id:
+      indicate=1
+      break
+  cursor.close()
+  if indicate==1:
+    return redirect(url_for('busi_info', business_id=business_id))
+  else:
+    return render_template('blogin.html',**{'msg': 'business id doesn\'t exist!'})
+
+
 @app.route('/orders/<user_id>/<business_id>/')
 def orders(user_id, business_id):
   if user_id == "0":
@@ -118,30 +137,89 @@ def orders(user_id, business_id):
 
   return render_template('orders.html',**context)
 
-@app.route('/blogin',methods=['GET','POST'])
-def blogin():
-  if request.method == 'GET':
-    return render_template('blogin.html')
-  business_id=request.form.get('business id')
-  cursor = g.conn.execute("SELECT business_id FROM business")
-  indicate=0
-  for i in cursor:
-    if i['business_id']==business_id:
-      indicate=1
-      break
-  cursor.close()
-  if indicate==1:
-    return redirect(url_for('busi_info', business_id=business_id))
+
+@app.route('/tips/<user_id>/<business_id>/')
+def tips(user_id, business_id):
+  if user_id == "0":
+    s = text("SELECT user_id, business_id, tdate, ttext FROM  tips WHERE business_id LIKE :x")
+    value = {'x': business_id}
+    cursor = g.conn.execute(s, value)
   else:
-    return render_template('blogin.html',**{'msg': 'business id doesn\'t exist!'})
+    s = text("SELECT user_id, business_id, tdate, ttext FROM tips WHERE user_id LIKE :x")
+    value = {'x': user_id}
+    cursor = g.conn.execute(s, value)
+  tip=[]
+  tips=[]
+  for i in cursor:
+    tip.append(i['user_id'])
+    tip.append(i['business_id'])
+    tip.append(i['tdate'])
+    tip.append(i['ttext'])
+    tips.append([tip])
+  cursor.close()
+  context=dict(data=tips)
+
+  return render_template('tips.html',**context)
+
+
+@app.route('/covid_19/<business_id>/')
+def covid_19(business_id):
+  s = text("SELECT business_id, bname, grubhub, delevery_or_takeout, temporary_close FROM business WHERE business_id LIKE :x")
+  value = {'x': business_id}
+  cursor = g.conn.execute(s, value)
+  covid = []
+  for i in cursor:
+    covid.append(i['business_id'])
+    covid.append(i['bname'])
+    covid.append(i['bname'])
+    covid.append(i['grubhub'])
+    covid.append(i['delevery_or_takeout'])
+    covid.append(i['temporary_close'])
+  cursor.close()
+  context = dict(data=covid)
+  return render_template('covid_19.html',**context)
+
 
 @app.route('/user_info/<user_id>/')
 def user_info(user_id):
-  return render_template('user_info.html', **{'user_id_': user_id, 'busi_id': 0})
+  user_return = text("SELECT user_id, cname, yelping_since, useful, "
+                     "funny, cool FROM customers WHERE user_id LIKE :x")
+  value = {'x': user_id}
+  cursor = g.conn.execute(user_return, value)
+  user = []
+  for results in cursor:
+    user.append(results["user_id"])
+    user.append(results["cname"])
+    user.append(results["yelping_since"])
+    user.append(results["useful"])
+    user.append(results["funny"])
+    user.append(results["cool"])
+  cursor.close()
+  context = dict(data=user)
+  return render_template('user_info.html', **context)
 
 @app.route('/busi_info/<business_id>/')
 def busi_info(business_id):
-  return render_template('busi_info.html', **{'user_id_':0, 'busi_id': business_id})
+  business_return = text("SELECT business_id, bname, category, hours, bstars, "
+                         "address, city, state, postal_code FROM business WHERE business_id LIKE :x")
+  value = {'x': business_id}
+  cursor = g.conn.execute(business_return, value)
+  busi = []
+  for i in cursor:
+    busi.append(i["business_id"])
+    busi.append(i["bname"])
+    busi.append(i["category"])
+    busi.append(i["hours"])
+    busi.append(i["bstars"])
+    busi.append(i["address"])
+    busi.append(i["city"])
+    busi.append(i["state"])
+    busi.append(i["postal_code"])
+  cursor.close()
+  context = dict(data = busi)
+  return render_template('busi_info.html', **context)
+
+
 
 @app.route('/orders_review/<order_id>/')
 def orders_review(order_id):

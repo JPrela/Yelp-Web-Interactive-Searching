@@ -5,6 +5,14 @@
     <title>Title</title>
 </head>
 <body>
-  <p><a href="{{ url_for('orders',user_id = user_id_, business_id = busi_id) }}"> All orders </a></p>
+  <h1>Users</h1>
+  <p> User ID: {{data[0]}} </p>
+  <p> Your name: {{data[1]}} </p>
+  <p> You registered at Yelp since: {{data[2]}} </p>
+  <p> You have received: {{data[3]}} useful compliment </p>
+  <p> You have received: {{data[4]}} funny compliment </p>
+  <p> You have received: {{data[5]}} cool compliment </p>
+  <p><a href="{{url_for('orders', user_id=user_id_,business_id=busi_id) }}"> All Orders </a></p>
+  <p><a href="{{ url_for('tips',user_id = user_id_, business_id = busi_id) }}"> All tips </a></p>
 </body>
 </html>
