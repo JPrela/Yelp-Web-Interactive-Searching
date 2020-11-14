@@ -112,6 +112,28 @@ def blogin():
   else:
     return render_template('blogin.html',**{'msg': 'business id doesn\'t exist!'})
 
+@app.route('/search',methods=['GET','POST'])
+def search():
+  if request.method == 'GET':
+    return render_template('search.html')
+  bname = request.form.get("business name")
+  bstars = request.form.get("star rating")
+  address = request.form.get("street address")
+  cursor = g.conn.execute("SELECT bname, bstars, address FROM business")
+  indicate= 0
+  for i in cursor:
+    if i['bname']==bname or i['bstars']==bstars or i['address']==address:
+      indicate=1
+  cursor.close()
+  if indicate==1:
+    return redirect(url_for('search_busi.html', bname=bname, bstars = bstars, address = address))
+  else:
+    return render_template('search.html',**{'msg': 'business doesn\'t exist!'})
+
+@app.route('/search_busi/<bname>/<bstars>/<address>/')
+def search_busi(bname, bstars, address):
+  return render_template('search_busi.html',**{bname:bname, bstars:bstars, address:address})
+
 
 @app.route('/orders/<user_id>/<business_id>/')
 def orders(user_id, business_id):
