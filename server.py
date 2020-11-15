@@ -116,43 +116,40 @@ def blogin():
 def search():
   if request.method == 'GET':
     return render_template('search.html')
-  bname = request.form.get("business name")
-  bstars = request.form.get("star rating")
-  address = request.form.get("street address")
-  cursor = g.conn.execute("SELECT bname, bstars, address FROM business")
-  indicate= 0
-  for i in cursor:
-    if bstars>0:
-      if i['bname']==bname or i['bstars']>=bstars or i['address']==address:
-        indicate=1
-  cursor.close()
-  if indicate==1:
-    return redirect(url_for('search_busi', bname=bname, bstars = bstars, address = address))
-  else:
-    return render_template('search.html',**{'msg': 'business doesn\'t exist!'})
+  bname = request.form.get("business name") if request.form.get("business name") !='' else '0'
+  bstars = request.form.get("star rating") if request.form.get("star rating") !='' else '0'
+  city = request.form.get("city") if request.form.get("city") !='' else '0'
+  state = request.form.get("state") if request.form.get("state") !='' else '0'
+  if bname=='0' and bstars=='0' and city=='0' and state=='0':
+    return (render_template('search.html', **{'msg':'Can\'t search without any input!'}))
+  return redirect(url_for('search_busi', bname=bname, bstars = bstars, city = city, state = state))
 
-@app.route('/search_busi/<bname>/<bstars>/<address>/')
-def search_busi(bname,bstars,address):
-  if bname!=0 and bstars!=0 and address!=0:
-    business_return = text("SELECT business_id, bname, category, hours, bstars, "
-                           "address, city, state, postal_code FROM business WHERE "
-                           "bname LIKE :x OR bstars >= :y OR address LIKE :z")
-    value = {'x': bname, 'y': bstars, 'z': address}
-    cursor = g.conn.execute(business_return, value)
+
+@app.route('/search_busi/<bname>/<bstars>/<city>/<state>/')
+def search_busi(bname,bstars,city,state):
+  s = text("SELECT business_id, bname, address, city, state, bstars, category FROM business WHERE bname LIKE :a and bstars >= :b and city like :c and state like :d")
+  value={}
+  value['a']= str('%'+bname+'%') if bname != '0' else '%'
+  value['b']= float(bstars) if bstars != '0' else 0
+  value['c']= str('%'+city+'%') if city != '0' else '%'
+  value['d']= state if state != '0' else '%'
+  cursor = g.conn.execute(s, value)
   busi = []
+  busi_s = []
   for i in cursor:
-    busi.append(i["business_id"])
-    busi.append(i["bname"])
-    busi.append(i["category"])
-    busi.append(i["hours"])
-    busi.append(i["bstars"])
-    busi.append(i["address"])
-    busi.append(i["city"])
-    busi.append(i["state"])
-    busi.append(i["postal_code"])
+    busi.append(i['business_id'])
+    busi.append(i['bname'])
+    busi.append(i['category'])
+    busi.append(i['bstars'])
+    busi.append(i['address'])
+    busi.append(i['city'])
+    busi.append(i['state'])
+    busi_s.append(busi[:])
+    busi.clear()
   cursor.close()
-  context = dict(data = busi)
-  return render_template('search_busi.html', **context)
+  context = dict(data=busi_s)
+  return (render_template('search_busi.html',**context))
+
 
 
 @app.route('/orders/<user_id>/<business_id>/')

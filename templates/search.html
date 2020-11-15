@@ -8,11 +8,13 @@
     <h1>Search for Businesses</h1>
     <form method = "post">
         <label for="business name">Business Name:</label>
-        <input type = "business name" name="business name">
+        <input type = "string" name="business name">
         <label for="star rating">Star Rating:</label>
-        <input type = "star rating" name="star rating">
-        <label for="street address">Street Address:</label>
-        <input type = "street address" name="street address">
+        <input type = "float" name="star rating">
+        <label for="city">City:</label>
+        <input type = "string" name="city">
+        <label for="state">State:</label>
+        <input type = "string" name="state">
         <input type = "submit" value ="search"> {{msg}}
     </form>
 
