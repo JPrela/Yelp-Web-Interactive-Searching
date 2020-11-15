@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Business found</title>
 </head>
 <body>
-    <h1>Business</h1>
+    <h1>Business found</h1>
+    <p><b><font size="5">{{msg}} results have been found.</font></b></p>
     {% for n in data %}
         <p>Business id: <a href="{{ url_for('busi_info',business_id=n[0]) }}"> {{n[0]}} </a></p>
         <p>Business name: {{n[1]}}</p>

@@ -148,8 +148,13 @@ def search_busi(bname,bstars,city,state):
     busi.clear()
   cursor.close()
   context = dict(data=busi_s)
+  msg_info={}
+  if len(busi_s) >0:
+    msg_info['msg'] = len(busi_s)
+  else:
+    msg_info['msg'] = 'No'
+  context.update(msg_info)
   return (render_template('search_busi.html',**context))
-
 
 
 @app.route('/orders/<user_id>/<business_id>/')
