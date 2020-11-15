@@ -5,6 +5,17 @@
     <title>Title</title>
 </head>
 <body>
-
+    <h1>Orders</h1>
+    <div>
+    {% for n in data %}
+        <p>Business ID: <a href="{{ url_for('busi_info',business_id=n[0]) }}"> {{n[0]}} </a></p>
+        <p>Business name: {{n[1]}}</p>
+        <p>Business category: {{n[2]}}</p>
+        <p>Business hours: {{n[3]}}</p>
+        <p>Average star rating has received: {{n[4]}}</p>
+        <p>Street address: {{n[5]}},{{n[6]}},{{n[7]}},{{n[8]}}</p>
+        <p>-------------------------------------------------------------------------------------</p>
+    {% endfor %}
+  </div>
 </body>
 </html>

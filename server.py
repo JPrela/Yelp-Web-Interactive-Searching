@@ -122,17 +122,37 @@ def search():
   cursor = g.conn.execute("SELECT bname, bstars, address FROM business")
   indicate= 0
   for i in cursor:
-    if i['bname']==bname or i['bstars']==bstars or i['address']==address:
-      indicate=1
+    if bstars>0:
+      if i['bname']==bname or i['bstars']>=bstars or i['address']==address:
+        indicate=1
   cursor.close()
   if indicate==1:
-    return redirect(url_for('search_busi.html', bname=bname, bstars = bstars, address = address))
+    return redirect(url_for('search_busi', bname=bname, bstars = bstars, address = address))
   else:
     return render_template('search.html',**{'msg': 'business doesn\'t exist!'})
 
 @app.route('/search_busi/<bname>/<bstars>/<address>/')
-def search_busi(bname, bstars, address):
-  return render_template('search_busi.html',**{bname:bname, bstars:bstars, address:address})
+def search_busi(bname,bstars,address):
+  if bname!=0 and bstars!=0 and address!=0:
+    business_return = text("SELECT business_id, bname, category, hours, bstars, "
+                           "address, city, state, postal_code FROM business WHERE "
+                           "bname LIKE :x OR bstars >= :y OR address LIKE :z")
+    value = {'x': bname, 'y': bstars, 'z': address}
+    cursor = g.conn.execute(business_return, value)
+  busi = []
+  for i in cursor:
+    busi.append(i["business_id"])
+    busi.append(i["bname"])
+    busi.append(i["category"])
+    busi.append(i["hours"])
+    busi.append(i["bstars"])
+    busi.append(i["address"])
+    busi.append(i["city"])
+    busi.append(i["state"])
+    busi.append(i["postal_code"])
+  cursor.close()
+  context = dict(data = busi)
+  return render_template('search_busi.html', **context)
 
 
 @app.route('/orders/<user_id>/<business_id>/')
@@ -194,7 +214,6 @@ def covid_19(business_id):
   covid = []
   for i in cursor:
     covid.append(i['business_id'])
-    covid.append(i['bname'])
     covid.append(i['bname'])
     covid.append(i['grubhub'])
     covid.append(i['delivery_or_takeout'])

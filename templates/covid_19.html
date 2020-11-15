@@ -5,6 +5,11 @@
     <title>Title</title>
 </head>
 <body>
-
+  <h1>COVID-19 Information</h1>
+  <p> Business ID: <a href="{{ url_for('busi_info',business_id=data[0]) }}"> {{data[0]}} </a></p>
+  <p> Business name: {{data[1]}} </p>
+  <p> Grubhub support: {{data[2]}} </p>
+  <p> Delivery or takeout: {{data[3]}} </p>
+  <p> Temporary closed during covid-19 period: {{data[4]}} </p>
 </body>
 </html>
