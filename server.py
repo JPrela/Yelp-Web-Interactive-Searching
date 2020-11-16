@@ -120,14 +120,18 @@ def search():
   bstars = request.form.get("star rating") if request.form.get("star rating") !='' else '0'
   city = request.form.get("city") if request.form.get("city") !='' else '0'
   state = request.form.get("state") if request.form.get("state") !='' else '0'
-  if bname=='0' and bstars=='0' and city=='0' and state=='0':
-    return (render_template('search.html', **{'msg':'Can\'t search without any input!'}))
-  return redirect(url_for('search_busi', bname=bname, bstars = bstars, city = city, state = state))
+  try:
+    float(bstars)
+    if bname == '0' and bstars == '0' and city == '0' and state == '0':
+      return (render_template('search.html', **{'msg': 'Can\'t search without any input!'}))
+    return redirect(url_for('search_busi', bname=bname, bstars=bstars, city=city, state=state))
+  except:
+    return (render_template('search.html', **{'msg': 'Star rating should be a number!'}))
 
 
 @app.route('/search_busi/<bname>/<bstars>/<city>/<state>/')
 def search_busi(bname,bstars,city,state):
-  s = text("SELECT business_id, bname, address, city, state, bstars, category FROM business WHERE bname LIKE :a and bstars >= :b and city like :c and state like :d")
+  s = text("SELECT business_id, bname, address, city, state, bstars, category FROM business WHERE UPPER(bname) LIKE UPPER(:a) and bstars >= :b and UPPER(city) like UPPER(:c) and UPPER(state) like UPPER(:d)")
   value={}
   value['a']= str('%'+bname+'%') if bname != '0' else '%'
   value['b']= float(bstars) if bstars != '0' else 0
